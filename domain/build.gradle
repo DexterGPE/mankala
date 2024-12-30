@@ -1,0 +1,49 @@
+plugins {
+    // Tell Gradle that we are building java as a library (non-executable piece of code intended for use by other applications).
+    id 'java'
+    id 'java-library'
+    id 'jacoco'
+    id 'checkstyle'
+}
+
+checkstyle {
+    toolVersion = "10.12.4"
+}
+
+repositories {
+    // Specify the repository mirror that we want to download our dependencies from. Maven Central is configured by default when creating a new Gradle project.
+    mavenCentral()
+}
+
+dependencies {
+    // Download JUnit so that we can use it in our tests.
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testRuntimeOnly "org.junit.platform:junit-platform-commons:1.8.2"
+}
+
+test {
+    // Use junit platform for unit tests
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+jacocoTestReport {
+    reports {
+        xml.required = true
+        csv.required = false
+        html.required = true
+    }
+
+    dependsOn test // tests are required to run before generating the report
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.8
+            }
+        }
+    }
+}
+
